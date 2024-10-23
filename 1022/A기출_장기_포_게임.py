@@ -19,3 +19,49 @@ set 길이 출력
 
 나머지는 구현하다 막히면 그때 생각해야지...
 '''
+
+def dfs(i, j, cnt) : # 좌표
+    global eat_po
+    if cnt >= 3 :
+        return
+    for di, dj in DIR : 
+        for k in range(1, N) : 
+            ni, nj = i+di*k, j+dj*k
+            if 0 <= ni < N and 0 <= nj < N :
+                if board[ni][nj] == 1 : eat_po += 1
+
+                if eat_po == 1 and board[ni][nj] == 0 :
+                    eat_po = 0
+                    board[i][j], board[ni][nj] = board[ni][nj], board[i][j]
+                    dfs(ni, nj, cnt+1)
+                    board[i][j], board[ni][nj] = board[ni][nj], board[i][j]
+
+                if eat_po == 2 and board[ni][nj] == 1 :
+                    po_set.add((ni, nj))
+                    eat_po = 0
+                    board[ni][nj] = 0
+                    board[i][j], board[ni][nj] = board[ni][nj], board[i][j]
+                    print('뭘 먹은 건데', po_set)
+                    dfs(ni, nj, cnt+1)
+                    board[i][j], board[ni][nj] = board[ni][nj], board[i][j]
+                    board[ni][nj] = 1
+            
+
+T = int(input())
+
+for tc in range(1, T+1) : 
+    N = int(input())
+    board = [list(map(int, input().split())) for _ in range(N)]
+    
+    po_set = set()
+    
+    DIR = [(0, 1), (1, 0), (0, -1), (-1, 0)] # 우 하 좌 상
+    eat_po = 0
+
+    for i in range(N) : 
+        for j in range(N) : 
+            if board[i][j] == 2 : 
+                dfs(i, j, 0)
+                break
+
+    print(f'#{tc} {len(po_set)}')
